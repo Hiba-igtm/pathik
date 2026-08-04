@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "template": "tanstack_start_ts_2026-05-29"
+}
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}
