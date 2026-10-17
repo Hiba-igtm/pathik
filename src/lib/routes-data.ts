@@ -15,6 +15,25 @@ import stoneTabletImg from "@/assets/stone tablet.png";
 import lotusToken from "@/assets/lotus motif glowing (1).png";
 import palmOpenVideo from "@/assets/palm leaf scroll vid.mp4";
 import mathuraHeritageVideo from "@/assets/mathura heritage moment.mp4";
+import kausambiintro from "@/assets/welcome kausambi.mp4"
+import kausambiSpeak from "@/assets/river merchant speaks.webm";
+import kausambiHold from "@/assets/takes out token.webm";
+import kausambiDown from "@/assets/river merchant puts handdown.webm";
+// Kausambi choice videos
+import kausambiChoiceVideo from "@/assets/kausambipicking choice.mp4";
+import kausambitradeVideo from "@/assets/kch1 market scene.mp4";
+import kausambiMonestryVideo from "@/assets/kch2 monastery sc.mp4";
+import kausambiQuestionVideo from "@/assets/kausambi questions vid.mp4";
+
+import coinvideo from "@/assets/kausambi token colleciton.mp4";
+// Kausambi choice buttons
+import kausambitradeBtn from "@/assets/trading post.png";
+import kausambiMonestryBtn from "@/assets/monastery.png";
+import coppercoin from "@/assets/copper coin token.png"
+// Kausambi retention answer images
+import kausambiAnswer1 from "@/assets/Two rivers meeting.png";
+import kausambiAnswer2 from "@/assets/a tall snow mountain.png";
+import kausambiAnswer3 from "@/assets/a golden desert.png";
 
 //taxilaaudio
 //import taxiladialogue1 from "@/assets/audio/td1.mp3";
@@ -352,15 +371,15 @@ heritageVideo: mathuraHeritageVideo,
       label: "Visit the Temple",
       reply: "",
       visual: "",
-      image: templeBtn,
-      video: mathuraTempleVideo,
+      image: sculptorBtnMathura,
+      video: mathuraSculptorVideo,
     },
     {
       label: "Watch the Sculptor",
       reply: "",
       visual: "",
-      image: sculptorBtnMathura,
-      video: mathuraSculptorVideo,
+      image: templeBtn,
+      video: mathuraTempleVideo,
     },
   ],
 
@@ -400,85 +419,29 @@ heritageVideo: mathuraHeritageVideo,
     narration: "",
   },
 },
-//     {
-//       id: "kausambi",
-//       name: "Kausambi",
-//       scene: sceneKausambi,
-//       elder: "River Merchant of Kausambi",
-//       elderEmoji: "🪙",
-//       introVoices: [
-//   // kausambiDialogue1,
-//   // kausambiDialogue2,
-// ],
+{ id: "kausambi", name: "", scene: sceneKausambi, video:kausambiintro,
 
-// questionVoice:
-//   // kausambiQuestion1
-//   undefined,
+elder: "", elderEmoji: "",
 
-// choiceVoices: [
-//   // kausambiChoice1,
-//   // kausambiChoice2,
-// ],
+intro: ["", ""],
 
-// heritageVoice:
-//   // kausambiHeritageVoice
-//   undefined,
-//       intro: [
-//         "Ah! Welcome to Kausambi little traveler! See where the two great rivers meet? This is why merchants love this city!",
-//         "Everything that travels by river must pass through Kausambi — we are the crossroads of the northern road!",
-//       ],
-//       heritageObject: "Ancient Copper Coin",
-//       heritageEmoji: "🪙",
-//       heritageLine:
-//         "This coin was made right here in Kausambi! When traders meet they use coins like this to buy and sell goods from across India!",
-//       choices: [
-//         {
-//           label: "The busy river trading post",
-//           reply: "Come! See the merchants from a dozen different lands buying and selling!",
-//           visual: "Market stalls bloom with colorful cloth, spices, and people from far away.",
-//        // image: kausambiMarketImg,
-//        // video: kausambiMarketVideo,
-//         },
-//         {
-//           label: "The Buddhist monastery on the hill",
-//           reply: "The monks here are very wise — they will share a story with us!",
-//           visual: "A stone monastery sits on a quiet hill. A monk waves you in with a smile.",
-//               // image: kausambiMonasteryImg,
-//               // video: kausambiMonasteryVideo,
-//         },
-//       ],
-//       token: {
-//         name: "Copper Coin",
-//         image: "🪙",
-//         line: "Every traveler who passes through Kausambi carries a coin to remember the crossing! This one is yours!",
-//       },
-//       retention: {
-//         question: "Why is Kausambi an important city?",
-//         correctHint: "Kausambi sits where two rivers meet — that is why all the traders come here!",
-//         options: [
-//           { label: "Two rivers meeting", correct: true },
-//           { label: "A tall snow mountain" },
-//           { label: "A golden desert" },
-//         ],
-//       },
-//       goodbye:
-//         "You are more than halfway now brave traveler! The great capital Pataliputra awaits you — city of Emperor Ashoka himself!",
-//       diary: {
-//         // ancientImage: diaryKausambiAncient,
-//         // modernImage: diaryKausambiModern,
-//         ancient: "Ancient Kausambi — river crossing and trading city",
-//         modern: "Near Prayagraj, Uttar Pradesh",
-//         narration:
-//           "Kausambi is now a quiet village near Prayagraj — but archaeologists still dig up its ancient treasures!",
-//       },
-//       interlude: {
-//         title: "An Ashokan Rock Edict",
-//         emoji: "🪨",
-//         narration:
-//           "Look! A message from the great emperor — carved into this rock for all travelers to read! Emperor Ashoka wanted everyone to be kind to people and animals!",
-//       },
-//     },
-//     {
+introVoices: [],
+
+heritageObject: "Ancient Copper Coin", heritageEmoji: "🪙", heritageLine: "", heritageVideo: coinvideo,
+
+questionVoice: undefined,
+
+choiceVoices: [],
+
+choices: [ { label: "Visit the Trading Post", reply: "", visual: "", image: kausambitradeBtn, video: kausambitradeVideo, }, { label: "Visit the Buddhist Monastery", reply: "", visual: "", image: kausambiMonestryBtn, video: kausambiMonestryVideo, }, ],
+
+token: { name: "Copper Coin", image: coppercoin, line: "", },
+
+retention: { question: "Why was Kausambi an important city?", correctHint: "", options: [ { label: "Two rivers meeting", image: kausambiAnswer1, correct: true, }, { label: "A tall snow mountain", image: kausambiAnswer2, }, { label: "A golden desert", image: kausambiAnswer3, }, ], },
+
+goodbye: "",
+
+diary: { ancientImage: undefined, modernImage: undefined, ancient: "Ancient Kausambi", modern: "Near Prayagraj, Uttar Pradesh", narration: "", }, },//     {
 //       id: "pataliputra",
 //       name: "Pataliputra",
 //       scene: scenePataliputra,

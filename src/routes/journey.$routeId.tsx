@@ -62,28 +62,51 @@ import mathuraAnswer1 from "@/assets/FIELDS OF COTTON.png";
 import mathuraAnswer2 from "@/assets/BEAUTIFUL STONE SCULPTURES.png";
 import mathuraAnswer3 from "@/assets/GREAT SAILING SHIPS.png";
 
+import coppercoin from "@/assets/copper coin token.png"
+import kausambiSpeak from "@/assets/river merchant speaks.webm";
+import kausambiHold from "@/assets/takes out token.webm";
+import kausambiDown from "@/assets/river merchant puts handdown.webm";
+// Kausambi choice videos
+import kausambiChoiceVideo from "@/assets/kausambipicking choice.mp4";
+import kausambitradeVideo from "@/assets/kch1 market scene.mp4";
+import kausambiMonestryVideo from "@/assets/kch2 monastery sc.mp4";
+import kausambiQuestionVideo from "@/assets/kausambi questions vid.mp4";
 
-import kausambiSpeak from "@/assets/kausambi/scholar speaking.webm";
-import kausambiHold from "@/assets/kausambi/scholar holds tablet up.webm";
-import kausambiDown from "@/assets/kausambi/scholar puts hands down.webm";
+// Kausambi choice buttons
+import kausambitradeBtn from "@/assets/trading post.png";
+import kausambiMonestryBtn from "@/assets/monastery.png";
 
-import varanasiSpeak from "@/assets/varanasi/scholar speaking.webm";
-import varanasiHold from "@/assets/varanasi/scholar holds tablet up.webm";
-import varanasiDown from "@/assets/varanasi/scholar puts hands down.webm";
+// Kausambi retention answer images
+import kausambiAnswer1 from "@/assets/Two rivers meeting.png";
+import kausambiAnswer2 from "@/assets/a tall snow mountain.png";
+import kausambiAnswer3 from "@/assets/a golden desert.png";
 
-import pataliputraSpeak from "@/assets/pataliputra/scholar speaking.webm";
-import pataliputraHold from "@/assets/pataliputra/scholar holds tablet up.webm";
-import pataliputraDown from "@/assets/pataliputra/scholar puts hands down.webm";
 
-import tamraliptiSpeak from "@/assets/tamralipti/scholar speaking.webm";
-import tamraliptiHold from "@/assets/tamralipti/scholar holds tablet up.webm";
-import tamraliptiDown from "@/assets/tamralipti/scholar puts hands down.webm";
 import boy1 from "@/assets/boy1 (1).png";
 import boy2 from "@/assets/boy2 (1).png";
 import girl1 from "@/assets/girl1 (1).png";
 import girl2 from "@/assets/girl2.png";
 import { stopBackgroundMusic } from "@/lib/backgroundMusic";
-//import { speakText } from "@/lib/elevenlabs";
+const scholarAnimations: Record<
+  string,
+  { speak: string; hold: string; down: string }
+> = {
+  taxila: {
+    speak: scholarAnimation,
+    hold: scholarHoldingTablet,
+    down: scholarHandsdown,
+  },
+  mathura: {
+    speak: mathuraSpeak,
+    hold: mathuraHold,
+    down: mathuraDown,
+  },
+  kausambi: {
+    speak: kausambiSpeak,
+    hold: kausambiHold,
+    down: kausambiDown,
+  },
+};
 const getIntroCharacter = (characterId?: string) => {
   switch (characterId) {
     case "boy1":
@@ -138,25 +161,8 @@ const getRouteIntroVideo = (routeId: string) => {
       return indiaMap;
   }
 };
-const scholarAnimations: Record<
-  string,
-  {
-    speak: string;
-    hold: string;
-    down: string;
-  }
-> = {
-  mathura: {
-    speak: mathuraSpeak,
-    hold: mathuraHold,
-    down: mathuraDown,
-  },
 
-  // varanasi: { ... },
-  // kausambi: { ... },
-  // pataliputra: { ... },
-  // tamralipti: { ... },
-};
+
 export const Route = createFileRoute("/journey/$routeId")({
   head: ({ params }) => {
     const r = ROUTES[params.routeId as RouteId];
@@ -224,20 +230,33 @@ const [selectedCharacter, setSelectedCharacter] = useState<any>(null);
     step:"arrival"
 })
   };
+const onStopComplete = (i: number) => {
+  console.log("STEP 4: onStopComplete called");
+  console.log("Completed index:", i);
+  console.log("Completed stop:", route.stops[i]?.id);
 
-  const onStopComplete = (i: number) => {
-  if (i + 1 < route.stops.length) {
+  const nextIndex = i + 1;
+
+  console.log("Next index:", nextIndex);
+  console.log("Next stop:", route.stops[nextIndex]?.id);
+
+  if (nextIndex < route.stops.length) {
+    console.log("STEP 5: Switching to travel screen");
+
     setPhase({
       kind: "travel",
       fromStopIndex: i,
-      toStopIndex: i + 1,
+      toStopIndex: nextIndex,
     });
   } else {
+    console.log("Journey complete");
+
     setPhase({
       kind: "complete",
     });
   }
 };
+
 
  const advanceFromDiary = (i: number) => {
   if (i + 1 < route.stops.length) {
@@ -260,10 +279,6 @@ const addToken = (name: string, image: string) => {
       : [...c, { name, image }]
   );
 };
-if (showTreasureGame) {
-  return <UttarapathTreasureGame />;
-}
-
 useEffect(() => {
   if (typeof window !== "undefined") {
     const saved = localStorage.getItem("selectedCharacter");
@@ -273,6 +288,11 @@ useEffect(() => {
     }
   }
 }, []);
+
+if (showTreasureGame) {
+  return <UttarapathTreasureGame />;
+}
+
 
 const characterImage =
   selectedCharacter?.characterId === "boy1"
@@ -327,15 +347,17 @@ return (
     )}
 {phase.kind === "travel" && (
   <TravelScreen
+    key={`${phase.fromStopIndex}-${phase.toStopIndex}`}
     route={route}
     fromIndex={phase.fromStopIndex}
     toIndex={phase.toStopIndex}
-    character={character}
+    character={selectedCharacter}
     onArrive={() => {
       goToStop(phase.toStopIndex);
     }}
   />
 )}
+
     {/* Keep your travel, diary, complete, activities screens here */}
   </main>
 );
@@ -438,90 +460,42 @@ useEffect(() => {
 
   return () => clearInterval(timer);
 }, [videoFinished]);
- return (
-  <>
-
-<section
-  className="fixed inset-0 z-[99999] overflow-hidden bg-black"
-  style={{
-    width: "100vw",
-    height: "100vh",
-  }}
->
-  <div className="absolute inset-0">
+return (
+  <section className="fixed inset-0 z-[99999] h-screen w-screen overflow-hidden bg-black">
+    {/* Full-screen intro video */}
     <video
-  src={uttarapathIntroVideo}
-  autoPlay
-  
-  playsInline
-  style={{
-    position: "fixed",
-    inset: 0,
-    width: "100vw",
-    height: "100vh",
-    objectFit: "cover",
-  }}
-/>
+      ref={videoRef}
+      src={getRouteIntroVideo(route.id)}
+      autoPlay
+      playsInline
+      preload="auto"
+      className="fixed left-0 top-0 h-full w-full object-cover"
+      style={{
+        width: "100vw",
+        height: "100vh",
+        objectFit: "cover",
+      }}
+      onEnded={() => {
+        setVideoFinished(true);
+        setShowButton(true);
+      }}
+    />
 
-<div className="fixed inset-0 z-[10001] pointer-events-none">
-
-  <p className="absolute top-5 left-5 text-white text-3xl">
-    
-  </p>
-
-  <div className="absolute bottom-8 right-8 pointer-events-auto">
-    <button onClick={onStart}>
-      <img src={beginWalkingBtn} className="w-72" />
-    </button>
-  </div>
-
-</div>
- 
-
-        {/* Iconic image fade 
-        <div className="absolute right-4 top-4 w-40 sm:w-56 overflow-hidden rounded-2xl border-4 border-card shadow-2xl animate-float-up">
-
-<img
-  src={route.iconicImage}
-  alt={route.name}
-/>
-
-          <p className="bg-card/95 px-2 py-1 text-center text-[10px] font-medium">{route.iconicCaption}</p>
-        </div>*/}
-{/* Dialogue overlaid on the map */}
-        <div className="relative z-10 flex min-h-[80vh] flex-col justify-end p-4 sm:p-6">
-           <div className="mx-auto w-full max-w-2xl">
-            <div className="mb-3 flex items-center justify-between gap-3">
-<h2 className="text-2xl font-bold drop-shadow-lg" style={{ color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}>
-{/* {route.name} — {route.tagline} */}
-              </h2>
-            </div>
-
-
-{videoFinished && showButton && (
-  <button
-    onClick={onStart}
-    style={{
-      position: "fixed",
-      top: "100px",
-      left: "100px",
-      width: "300px",
-      height: "100px",
-      background: "red",
-      color: "white",
-      fontSize: "30px",
-      zIndex: 999999,
-    }}
-  >
-    CLICK ME
-  </button>
-)}
-          </div>
-        </div>
+    {/* Begin Walking button */}
+    <div className="fixed inset-0 z-[10001] pointer-events-none">
+      <div className="absolute bottom-8 right-8 pointer-events-auto">
+        <button onClick={onStart}>
+          <img
+            src={beginWalkingBtn}
+            alt="Begin Walking"
+            className="w-72 h-auto"
+          />
+        </button>
       </div>
-    </section>
-  </>
+    </div>
+  </section>
 );
+
 }
 
 function InterludeScreen({
@@ -580,22 +554,28 @@ onTokenCollected: (
   onComplete: () => void;
   character: any;
 }) {
-    const stop = route.stops[stopIndex];
-const scholar =
-  scholarAnimations[stop.id] ?? {
-    speak: scholarAnimation,
-    hold: scholarHoldingTablet,
-    down: scholarHandsdown,
-  };
+  const stop = route.stops[stopIndex];
+
+const scholar = scholarAnimations[stop.id] ?? {
+  speak: scholarAnimation,
+  hold: scholarHoldingTablet,
+  down: scholarHandsdown,
+};
 const [showHandsDown, setShowHandsDown] = useState(false);
 const [showTablet, setShowTablet] = useState(false);
 const [showContinue, setShowContinue] = useState(false);const videoRef = useRef<HTMLVideoElement | null>(null);
 const [taxilaVideoEnded, setTaxilaVideoEnded] =
   useState(
     stop.id !== "taxila" &&
-    stop.id !== "mathura"
+    stop.id !== "mathura" &&
+    stop.id != "kausambi"
   );
-  const [showScholar, setShowScholar] = useState(false);
+const [showScholar, setShowScholar] = useState(false);
+
+useEffect(() => {
+  setShowScholar(false);
+}, [stopIndex]);
+
 const [keepScholarVisible, setKeepScholarVisible] = useState(false);
 useEffect(() => {
   setShowScholar(false);
@@ -609,7 +589,8 @@ useEffect(() => {
 useEffect(() => {
   setTaxilaVideoEnded(
     stop.id !== "taxila" &&
-    stop.id !== "mathura"
+    stop.id !== "mathura" &&
+    stop.id !== "kausambi"
   );
 }, [stop.id]);
 const [showVideoContinue, setShowVideoContinue] = useState(false);
@@ -619,7 +600,7 @@ const [showVideoContinue, setShowVideoContinue] = useState(false);
     {/* Scene */}
 <div
   className={
-  stop.id === "taxila" || stop.id === "mathura"
+  stop.id === "taxila" || stop.id === "mathura" || stop.id === "kausambi"
   ? "relative w-screen h-screen overflow-hidden"
     : "relative mx-auto w-full max-w-5xl min-h-[80vh] overflow-hidden rounded-3xl border-4 border-border shadow-2xl"
 }
@@ -632,7 +613,7 @@ const [showVideoContinue, setShowVideoContinue] = useState(false);
       autoPlay
       playsInline
       className={
-  stop.id === "taxila" || stop.id === "mathura"
+  stop.id === "taxila" || stop.id === "mathura" || stop.id === "kausambi"
     ? "fixed inset-0 w-screen h-screen object-cover"
     : "absolute inset-0 w-screen h-screen object-cover"
 }
@@ -677,44 +658,39 @@ style={{
     />
   </div>
 )}
-
 {showScholar && (
-<div
-className={
-  stop.id === "taxila" || stop.id === "mathura"
-    ? "fixed z-[1] pointer-events-none"
-    : "absolute z-20 pointer-events-none"
-}
-style={{
-  right: "30px",
-  bottom: "0px",
-}}
->
-
-
-{step !== "goodbye" ? (
-
-     <video
-src={scholar.speak}
-  autoPlay
-  loop
-  muted
-  playsInline
-  className="h-96 w-auto object-contain"
-/>
-
+  <div
+    className={
+      stop.id === "taxila" ||
+      stop.id === "mathura" ||
+      stop.id === "kausambi"
+        ? "fixed z-[100] pointer-events-none"
+        : "absolute z-20 pointer-events-none"
+    }
+    style={{
+      right: "30px",
+      bottom: "0px",
+    }}
+  >
+    {step !== "goodbye" ? (
+      <video
+        key={`${stop.id}-${scholar.speak}`}
+        src={scholar.speak}
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="h-96 w-auto object-contain"
+      />
     ) : (
-
-   <ScholarGoodbye
-  tokenImage={stop.token.image}
-  holdVideo={scholar.hold}
-downVideo={scholar.down}
-/>
-
+      <ScholarGoodbye
+        tokenImage={stop.token.image}
+        holdVideo={scholar.hold}
+        downVideo={scholar.down}
+      />
     )}
   </div>
 )}
-
 
         {/* Taxila characters ONLY */}
         {stop.id === "taxila" && (
@@ -740,7 +716,7 @@ downVideo={scholar.down}
         </div>
 <div
   className={
-  stop.id === "taxila" || stop.id === "mathura"
+  stop.id === "taxila" || stop.id === "mathura" ||  stop.id === "kausambi"
     ? "absolute inset-0 z-[10002] pointer-events-auto"
     : "absolute inset-0 z-[100] pointer-events-auto"
 }
@@ -766,87 +742,85 @@ downVideo={scholar.down}
 </div>
   );
 }
+
+
 function ScholarGoodbye({
   tokenImage,
   holdVideo,
   downVideo,
+  onComplete,
 }: {
   tokenImage: string;
   holdVideo: string;
   downVideo: string;
+  onComplete?: () => void;
 }) {
-  const [stage, setStage] = useState(0);
-useEffect(() => {
-  if (stage !== 1) return;
+  const [stage, setStage] = useState<0 | 1 | 2>(0);
 
-  const timer = setTimeout(() => {
-    setStage(2);
-  }, 20000); // tablet stays for 2 seconds
-
-  return () => clearTimeout(timer);
-}, [stage]);
-  useEffect(() => {
-    // After 1.5 seconds, show the glowing tablet
-    const t1 = setTimeout(() => {
-      setStage(1);
-    }, 1500);
-
-    // After 4 seconds, play hands-down animation
-    const t2 = setTimeout(() => {
-      setStage(2);
-    }, 40000);
-
-   
-  }, []);
-
-return (
-  <>
-    {/* Holding animation */}
-    {stage === 0 && (
-      <video
-        src={holdVideo}
-        autoPlay
-        muted
-        playsInline
-        className="h-96 w-auto object-contain"
-        onEnded={() => setStage(1)}
-      />
-    )}
-
-    {/* Hands down animation */}
-    {stage === 1 && (
-      <>
+  return (
+    <>
+      {/* Stage 0: Merchant takes out and holds the token */}
+      {stage === 0 && (
         <video
+          key={holdVideo}
+          src={holdVideo}
+          autoPlay
+          muted
+          playsInline
+          onEnded={() => {
+            setStage(1);
+          }}
+          onError={(e) => {
+            console.error("Holding-token video failed:", holdVideo, e.currentTarget.error);
+          }}
+          className="h-96 w-auto object-contain"
+        />
+      )}
+
+      {/* Stage 1: Merchant puts his hand down */}
+      {stage === 1 && (
+        <video
+          key={downVideo}
           src={downVideo}
           autoPlay
           muted
           playsInline
+          onEnded={() => {
+            setStage(2);
+          }}
+          onError={(e) => {
+            console.error("Hands-down video failed:", downVideo, e.currentTarget.error);
+          }}
           className="h-96 w-auto object-contain"
         />
+      )}
 
-        {/* Glowing Stone Tablet */}
+      {/* Stage 2: Glowing token popup */}
+      {stage === 2 && (
         <div
           className="fixed z-[9999]"
           style={{
             left: "50%",
             top: "45%",
             transform: "translate(-50%, -50%)",
+            pointerEvents: "none",
           }}
         >
           <img
             src={tokenImage}
-            alt="Stone Tablet"
+            alt="Collected heritage token"
             className="animate-tokenGlow"
-            style={{
-              width: "200px", // change size here
-            }}
+            style={{ width: "200px" }}
+            onLoad={() => onComplete?.()}
           />
         </div>
-      </>
-    )}
-  </>
-);
+      )}
+    </>
+  );
 }
+
+
+
 function ElderBubble({ emoji, name, lines, color }: { emoji: string; name: string; lines: string[]; color: string }) {
   const text = lines.join(" ");
   return (
@@ -909,7 +883,17 @@ const currentVideo =
       ? mathuraSculptorVideo
       : mathuraQuestionVideo
 
+    : stop.id === "kausambi"
+    ? selectedVideo === "choice"
+      ? kausambiChoiceVideo
+      : selectedVideo === "option1"
+      ? kausambitradeVideo
+      : selectedVideo === "option2"
+      ? kausambiMonestryVideo
+      : kausambiQuestionVideo
+
     : "";
+
 useEffect(() => {
   const video = choiceVideoRef.current;
 
@@ -947,7 +931,7 @@ useEffect(() => {
 
     const timer = setTimeout(() => {
       setShowGoodbyeContinue(true);
-    }, 3000); // wait for both animations
+    }, 1000); // wait for both animations
 
     return () => clearTimeout(timer);
   }
@@ -1209,6 +1193,12 @@ autoPlay
 <div className="absolute bottom-21 right-18 z-50">
             <PrimaryButton
   onClick={() => {
+    console.log("STEP 3: Token Continue clicked");
+    console.log("Current stop:", stop.id);
+    console.log("Current stop index:", route.stops.findIndex(
+      (s) => s.id === stop.id
+    ));
+
     stopAudio();
 
     onTokenCollected(
@@ -1218,8 +1208,7 @@ autoPlay
 
     onComplete();
   }}
-/>
-        </div>
+/>        </div>
       </div>
     );
   }
@@ -1247,7 +1236,16 @@ if (stop.id === "mathura") {
       ? mathuraSculptorVideo
       : mathuraQuestionVideo;
 }
-
+if (stop.id === "kausambi") {
+  currentVideo =
+    selectedVideo === "choice"
+      ? kausambiChoiceVideo
+      : selectedVideo === "option1"
+      ? kausambitradeVideo
+      : selectedVideo === "option2"
+      ? kausambiMonestryVideo
+      : kausambiQuestionVideo;
+}
 return (
   <div className="fixed inset-0 z-[10000] pointer-events-none">
 <video
@@ -1259,23 +1257,22 @@ return (
   muted={false}
   preload="auto"
 className="absolute inset-0 h-full w-full object-cover z-0 pointer-events-none"
-   onEnded={() => {
-  console.log("ENDED:", selectedVideo);
+ onEnded={() => {
+  console.log("ENDED:", selectedVideo, "STOP:", stop.id);
 
   if (selectedVideo === "choice") {
-    console.log("Choice ended");
     setChoiceVideoEnded(true);
   } else if (
-  selectedVideo === "option1" ||
-selectedVideo === "option2"
+    selectedVideo === "option1" ||
+    selectedVideo === "option2"
   ) {
-    console.log("Study/Market ended");
     setSelectedVideoEnded(true);
   } else if (selectedVideo === "retention") {
-    console.log("Retention ended");
+    console.log("Retention video finished for:", stop.id);
     setSelectedVideoEnded(true);
   }
 }}
+
       />
       
 <div className="absolute inset-0 z-[100000] pointer-events-auto">
@@ -1284,6 +1281,7 @@ selectedVideo === "option2"
 
 {selectedVideo === "choice" && (
   <>
+    {/* TAXILA CHOICE BUTTONS */}
     {stop.id === "taxila" && (
       <>
         <button
@@ -1294,7 +1292,11 @@ selectedVideo === "option2"
           }}
           className="fixed left-[20%] bottom-[30%] z-[9999999]"
         >
-          <img src={studyBtn} className="w-48" />
+          <img
+            src={studyBtn}
+            alt="University"
+            className="w-48"
+          />
         </button>
 
         <button
@@ -1305,11 +1307,53 @@ selectedVideo === "option2"
           }}
           className="fixed right-[20%] bottom-[30%] z-[9999999]"
         >
-          <img src={marketBtn} className="w-48" />
+          <img
+            src={marketBtn}
+            alt="Market"
+            className="w-48"
+          />
         </button>
       </>
     )}
 
+    {/* KAUSAMBI CHOICE BUTTONS */}
+    {stop.id === "kausambi" && (
+      <>
+        <button
+          onClick={() => {
+            setSelectedVideo("option1");
+            setChoiceVideoEnded(false);
+            setSelectedVideoEnded(false);
+            setAnsweredCorrectly(null);
+          }}
+          className="fixed left-[20%] bottom-[30%] z-[9999999]"
+        >
+          <img
+            src={kausambitradeBtn}
+            alt="Trading Post"
+            className="w-48"
+          />
+        </button>
+
+        <button
+          onClick={() => {
+            setSelectedVideo("option2");
+            setChoiceVideoEnded(false);
+            setSelectedVideoEnded(false);
+            setAnsweredCorrectly(null);
+          }}
+          className="fixed right-[20%] bottom-[30%] z-[9999999]"
+        >
+          <img
+            src={kausambiMonestryBtn}
+            alt="Monastery"
+            className="w-48"
+          />
+        </button>
+      </>
+    )}
+
+    {/* MATHURA CHOICE BUTTONS */}
     {stop.id === "mathura" && (
       <>
         <button
@@ -1320,7 +1364,11 @@ selectedVideo === "option2"
           }}
           className="fixed left-[20%] bottom-[30%] z-[9999999]"
         >
-          <img src={templeBtn} className="w-48" />
+          <img
+            src={templeBtn}
+            alt="Temple"
+            className="w-48"
+          />
         </button>
 
         <button
@@ -1331,12 +1379,17 @@ selectedVideo === "option2"
           }}
           className="fixed right-[20%] bottom-[30%] z-[9999999]"
         >
-          <img src={sculptorBtnMathura} className="w-48" />
+          <img
+            src={sculptorBtnMathura}
+            alt="Sculptor"
+            className="w-48"
+          />
         </button>
       </>
     )}
   </>
 )}
+
 {selectedVideoEnded &&
  selectedVideo !== "choice" &&
  selectedVideo !== "retention" && (
@@ -1351,7 +1404,7 @@ selectedVideo === "option2"
 )}
 {selectedVideo === "retention" && (
   <>
-    {/* ---------------- TAXILA QUESTION ---------------- */}
+    {/* TAXILA QUESTION */}
     {stop.id === "taxila" && (
       <>
         <button
@@ -1389,7 +1442,45 @@ selectedVideo === "option2"
       </>
     )}
 
-    {/* ---------------- MATHURA QUESTION ---------------- */}
+    {/* KAUSAMBI QUESTION */}
+    {stop.id === "kausambi" && (
+      <>
+        <button
+          onClick={() => setAnsweredCorrectly(true)}
+          className="absolute left-[12%] bottom-[30%] z-[99999]"
+        >
+          <img
+            src={kausambiAnswer1}
+            alt="Two rivers meeting"
+            className="w-52"
+          />
+        </button>
+
+        <button
+          onClick={() => setAnsweredCorrectly(false)}
+          className="absolute left-[44%] bottom-[30%] z-[99999]"
+        >
+          <img
+            src={kausambiAnswer2}
+            alt="A tall snow mountain"
+            className="w-52"
+          />
+        </button>
+
+        <button
+          onClick={() => setAnsweredCorrectly(false)}
+          className="absolute right-[12%] bottom-[30%] z-[99999]"
+        >
+          <img
+            src={kausambiAnswer3}
+            alt="A golden desert"
+            className="w-52"
+          />
+        </button>
+      </>
+    )}
+
+    {/* MATHURA QUESTION */}
     {stop.id === "mathura" && (
       <>
         <button
@@ -1428,37 +1519,51 @@ selectedVideo === "option2"
     )}
 
     {/* CORRECT ANSWER */}
-    {answeredCorrectly === true && (
-      <div className="absolute inset-0 flex flex-col items-center justify-center z-[100000]">
-        <h2 className="text-5xl font-bold text-yellow-300 animate-bounce">
-          🎉 Congratulations! 🎉
-        </h2>
+  {answeredCorrectly === true && (
+  <div className="fixed inset-0 z-[100000] flex flex-col items-center justify-center bg-black/40">
+    <h2 className="animate-bounce text-5xl font-bold text-yellow-300">
+      🎉 Congratulations! 🎉
+    </h2>
 
-        <div className="fixed bottom-8 right-8 z-[100000]">
-  <button
-    onClick={() => setStep("goodbye")}
-  >
-    <img
-      src={continueBtn}
-      alt="Continue"
-      className="w-52"
-    />
-  </button>
-</div>
-      </div>
-    )}
+    <button
+    
+onClick={() => {
+  console.log("Correct answer Continue clicked:", stop.id);
 
-    {/* WRONG ANSWER */}
-  {answeredCorrectly === false && (
-  <div className="absolute top-10 left-1/2 -translate-x-1/2 z-[100000]">
-    <p className="rounded-xl bg-red-600 px-6 py-3 text-2xl font-bold text-white">
-      ❌ Try Again!
-    </p>
+  setAnsweredCorrectly(null);
+  setSelectedVideo("choice");
+
+  if (stop.id === "kausambi") {
+    setStep("goodbye");
+  } else {
+    setStep("goodbye");
+  }
+}}
+
+
+      className="fixed bottom-8 right-8 z-[100001]"
+    >
+      <img
+        src={continueBtn}
+        alt="Continue"
+        className="w-52"
+      />
+    </button>
   </div>
 )}
 
+
+    {/* WRONG ANSWER */}
+    {answeredCorrectly === false && (
+      <div className="absolute left-1/2 top-10 z-[100000] -translate-x-1/2">
+        <p className="rounded-xl bg-red-600 px-6 py-3 text-2xl font-bold text-white">
+          ❌ Try Again!
+        </p>
+      </div>
+    )}
   </>
 )}
+
 
       </div>
     </div>
@@ -1482,9 +1587,11 @@ if (step === "goodbye") {
        
             <PrimaryButton
             onClick={() => {
-              stopAudio();
-              setStep("token");
-            }}
+  console.log("STEP 2: Goodbye Continue clicked");
+
+  stopAudio();
+  setStep("token");
+}}
           />
         
         </div>
